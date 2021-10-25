@@ -1,11 +1,21 @@
 #include "50cc.h"
 
+Token *token;
+char *user_input;
+
 bool consume(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
     return false;
   token = token->next;
   return true;
+}
+
+Token *consume_ident() {
+  if (token->kind != TK_IDENT) return NULL;
+  Token *tok = token;
+  token = token->next;
+  return tok;
 }
 
 void expect(char *op) {
@@ -24,6 +34,8 @@ int expect_number() {
 
 bool at_eof() { return token->kind == TK_EOF; }
 
+bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
+
 Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
   Token *tok = calloc(1, sizeof(Token));
   tok->kind = kind;
@@ -32,8 +44,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
   cur->next = tok;
   return tok;
 }
-
-bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
 
 Token *tokenize() {
   char *p = user_input;
@@ -54,8 +64,12 @@ Token *tokenize() {
       continue;
     }
 
-    if (strchr("+-*/()<>", *p)) {
+    if (strchr("+-*/()<>=;", *p)) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+    if ('a' <= *p && *p <= 'z') {
+      cur = new_token(TK_IDENT, cur, p++, 1);
       continue;
     }
 

@@ -6,7 +6,7 @@
 #include <string.h>
 
 // tokenize
-typedef enum { TK_RESERVED, TK_NUM, TK_EOF } TokenKind;
+typedef enum { TK_RESERVED, TK_NUM, TK_IDENT, TK_EOF } TokenKind;
 
 typedef struct Token Token;
 struct Token {
@@ -24,6 +24,7 @@ void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 bool consume(char *op);
+Token *consume_ident();
 void expect(char *op);
 int expect_number();
 bool at_eof();
@@ -41,7 +42,9 @@ typedef enum {
   ND_EQ,
   ND_NE,
   ND_LT,
-  ND_LE
+  ND_LE,
+  ND_ASSIGN,
+  ND_LVAR,
 } NodeKind;
 
 typedef struct Node Node;
@@ -50,8 +53,14 @@ struct Node {
   Node *lhs;
   Node *rhs;
   int val;
+  int offset;
 };
 
+extern Node *code[];
+
+void program();
+Node *stmt();
+Node *assign();
 Node *expr();
 Node *equality();
 Node *relational();
@@ -63,6 +72,6 @@ Node *primary();
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
 
-//gen
+// gen
+void gen_lval(Node *node);
 void gen(Node *node);
-
