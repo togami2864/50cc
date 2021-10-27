@@ -75,3 +75,13 @@ Node *new_node_num(int val);
 // gen
 void gen_lval(Node *node);
 void gen(Node *node);
+
+typedef struct LVar LVar;
+struct LVar {
+  LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
+
+extern LVar *locals;
