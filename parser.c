@@ -45,6 +45,12 @@ bool consume_if() {
   return true;
 }
 
+bool consume_else() {
+  if (token->kind != TK_ELSE) return false;
+  token = token->next;
+  return true;
+}
+
 void expect(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
@@ -53,7 +59,10 @@ void expect(char *op) {
 }
 
 int expect_number() {
-  if (token->kind != TK_NUM) error_at(token->str, "数ではありません");
+  if (token->kind != TK_NUM) {
+    fprintf(stderr, "%d\n", token->kind);
+    error_at(token->str, "数ではありません");
+  }
   int val = token->val;
   token = token->next;
 
@@ -78,18 +87,31 @@ void program() {
 
 Node *stmt() {
   Node *node;
-  if (consume_return()) {
-    node = new_node(ND_RETURN, expr(), NULL);
-  } else if (consume_if()) {
+
+  if (consume_if()) {
     expect("(");
     node = calloc(1, sizeof(Node));
+    node->kind = ND_IF;
     node->lhs = expr();
     expect(")");
     node->rhs = stmt();
+    node->els = NULL;
+    if (consume_else()) {
+      Node *els = calloc(1, sizeof(Node));
+      els->kind = ND_ELSE;
+      els->lhs = node->rhs;
+      els->rhs = stmt();
+      node->rhs = els;
+    }
     return node;
+  }
+
+  if (consume_return()) {
+    node = new_node(ND_RETURN, expr(), NULL);
   } else {
     node = expr();
   }
+
   expect(";");
   return node;
 }

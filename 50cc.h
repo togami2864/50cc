@@ -12,6 +12,7 @@ typedef enum {
   TK_IDENT,
   TK_RETURN,
   TK_IF,
+  TK_ELSE,
   TK_EOF
 } TokenKind;
 
@@ -33,6 +34,8 @@ void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
 Token *consume_ident();
 bool consume_return();
+bool consume_if();
+bool consume_else();
 void expect(char *op);
 int expect_number();
 bool at_eof();
@@ -54,7 +57,8 @@ typedef enum {
   ND_ASSIGN,
   ND_LVAR,
   ND_RETURN,
-  ND_IF
+  ND_IF,
+  ND_ELSE
 } NodeKind;
 
 typedef struct Node Node;
@@ -62,6 +66,7 @@ struct Node {
   NodeKind kind;
   Node *lhs;
   Node *rhs;
+  Node *els;
   int val;
   int offset;
 };

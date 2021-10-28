@@ -57,6 +57,12 @@ Token *tokenize() {
       continue;
     }
 
+    if (startswith(p, "else") && !isalnum(p[4])) {
+      cur = new_token(TK_ELSE, cur, p, 4);
+      p += 4;
+      continue;
+    }
+
     if ('a' <= *p && *p <= 'z') {
       char *c = p;
       while ('a' <= *c && *c <= 'z') {
