@@ -21,7 +21,6 @@ Node *new_node_num(int val) {
 LVar *find_lvar(Token *tok) {
   int i = 0;
   for (LVar *var = locals; var; var = var->next) {
-    fprintf(stderr, "debug: %d: %s\n", i, var->name);
     i++;
     if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
       return var;
@@ -36,7 +35,12 @@ void program() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node;
+  if (consume_return()) {
+    node = new_node(ND_RETURN, expr(), NULL);
+  } else {
+    node = expr();
+  }
   expect(";");
   return node;
 }
