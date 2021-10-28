@@ -3,42 +3,6 @@
 Token *token;
 char *user_input;
 
-bool consume(char *op) {
-  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
-      memcmp(token->str, op, token->len))
-    return false;
-  token = token->next;
-  return true;
-}
-
-Token *consume_ident() {
-  if (token->kind != TK_IDENT) return NULL;
-  Token *tok = token;
-  token = token->next;
-  return tok;
-}
-
-bool consume_return() {
-  if (token->kind != TK_RETURN) return false;
-  token = token->next;
-  return true;
-}
-
-void expect(char *op) {
-  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
-      memcmp(token->str, op, token->len))
-    error_at(token->str, "expected \"%s\"", op);
-  token = token->next;
-}
-
-int expect_number() {
-  if (token->kind != TK_NUM) error_at(token->str, "数ではありません");
-  int val = token->val;
-  token = token->next;
-
-  return val;
-}
-
 bool at_eof() { return token->kind == TK_EOF; }
 
 bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
@@ -84,6 +48,12 @@ Token *tokenize() {
     if (strncmp(p, "return", 6) == 0 && !isalnum(p[6])) {
       cur = new_token(TK_RETURN, cur, p, 6);
       p += 6;
+      continue;
+    }
+
+    if (startswith(p, "if") && !isalnum(p[2])) {
+      cur = new_token(TK_IF, cur, p, 2);
+      p += 2;
       continue;
     }
 

@@ -31,28 +31,30 @@ assert(){
 # assert 1 "0!=1;"
 # assert 0 "42!=42;"
 
-assert 1 "0<1;"
-assert 0 "1<1;"
-assert 0 "2<1;"
-assert 1 "0<=1;"
-assert 1 "1<=1;"
-assert 0 "2<=1;"
+# assert 1 "0<1;"
+# assert 0 "1<1;"
+# assert 0 "2<1;"
+# assert 1 "0<=1;"
+# assert 1 "1<=1;"
+# assert 0 "2<=1;"
 
-assert 1 "1>0;"
-assert 0 "1>1;"
-assert 0 "1>2;"
-assert 1 "1>=0;"
-assert 1 "1>=1;"
-assert 0 "1>=2;"
+# assert 1 "1>0;"
+# assert 0 "1>1;"
+# assert 0 "1>2;"
+# assert 1 "1>=0;"
+# assert 1 "1>=1;"
+# assert 0 "1>=2;"
 
-assert 14 "a = 3;
-b = 5 * 6 - 8;
-a + b / 2;"
+# assert 14 "a = 3;
+# b = 5 * 6 - 8;
+# a + b / 2;"
 
-assert 6 "return 6;"
+# assert 6 "return 6;"
 
-assert 6 "foo = 1;
-bar = 2 + 3;
-return foo + bar;"
+# assert 6 "foo = 1;
+# bar = 2 + 3;
+# return foo + bar;"
+
+assert 3 "if(1==1)return 3;"
 
 echo OK

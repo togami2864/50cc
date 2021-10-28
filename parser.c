@@ -18,6 +18,48 @@ Node *new_node_num(int val) {
   return node;
 }
 
+bool consume(char *op) {
+  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
+      memcmp(token->str, op, token->len))
+    return false;
+  token = token->next;
+  return true;
+}
+
+Token *consume_ident() {
+  if (token->kind != TK_IDENT) return NULL;
+  Token *tok = token;
+  token = token->next;
+  return tok;
+}
+
+bool consume_return() {
+  if (token->kind != TK_RETURN) return false;
+  token = token->next;
+  return true;
+}
+
+bool consume_if() {
+  if (token->kind != TK_IF) return false;
+  token = token->next;
+  return true;
+}
+
+void expect(char *op) {
+  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
+      memcmp(token->str, op, token->len))
+    error_at(token->str, "expected \"%s\"", op);
+  token = token->next;
+}
+
+int expect_number() {
+  if (token->kind != TK_NUM) error_at(token->str, "数ではありません");
+  int val = token->val;
+  token = token->next;
+
+  return val;
+}
+
 LVar *find_lvar(Token *tok) {
   int i = 0;
   for (LVar *var = locals; var; var = var->next) {
@@ -38,6 +80,13 @@ Node *stmt() {
   Node *node;
   if (consume_return()) {
     node = new_node(ND_RETURN, expr(), NULL);
+  } else if (consume_if()) {
+    expect("(");
+    node = calloc(1, sizeof(Node));
+    node->lhs = expr();
+    expect(")");
+    node->rhs = stmt();
+    return node;
   } else {
     node = expr();
   }
