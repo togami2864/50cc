@@ -60,4 +60,8 @@ else return 6;
 return 2;
 "
 
+assert 10 "i = 0;
+while (i < 10) i = i + 1;
+return i;"
+
 echo OK

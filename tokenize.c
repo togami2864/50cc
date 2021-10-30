@@ -63,6 +63,12 @@ Token *tokenize() {
       continue;
     }
 
+    if (startswith(p, "while") && !isalnum(p[5])) {
+      cur = new_token(TK_WHILE, cur, p, 5);
+      p += 5;
+      continue;
+    }
+
     if ('a' <= *p && *p <= 'z') {
       char *c = p;
       while ('a' <= *c && *c <= 'z') {
