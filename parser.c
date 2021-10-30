@@ -57,6 +57,12 @@ bool consume_while() {
   return true;
 }
 
+bool consume_for() {
+  if (token->kind != TK_FOR) return false;
+  token = token->next;
+  return true;
+}
+
 void expect(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
@@ -119,6 +125,29 @@ Node *stmt() {
     node->lhs = expr();
     expect(")");
     node->rhs = stmt();
+    return node;
+  }
+
+  if (consume_for()) {
+    expect("(");
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_FOR;
+    Node *left = calloc(1, sizeof(Node));
+    left->kind = ND_FOR_LEFT;
+    Node *right = calloc(1, sizeof(Node));
+    right->kind = ND_FOR_RIGHT;
+
+    left->lhs = expr();
+    expect(";");
+    left->rhs = expr();
+    expect(";");
+    right->lhs = expr();
+    expect(")");
+    right->rhs = stmt();
+
+    node->lhs = left;
+    node->rhs = right;
+
     return node;
   }
 

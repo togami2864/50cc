@@ -64,4 +64,9 @@ assert 10 "i = 0;
 while (i < 10) i = i + 1;
 return i;"
 
+assert  10 "a = 0;
+for (i = 0; i < 10; i = i + 1) a = a + 1;
+return a;"
+
+
 echo OK
