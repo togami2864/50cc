@@ -137,12 +137,21 @@ Node *stmt() {
     Node *right = calloc(1, sizeof(Node));
     right->kind = ND_FOR_RIGHT;
 
-    left->lhs = expr();
-    expect(";");
-    left->rhs = expr();
-    expect(";");
-    right->lhs = expr();
-    expect(")");
+    if (!consume(";")) {
+      left->lhs = expr();
+      expect(";");
+    }
+
+    if (!consume(";")) {
+      left->rhs = expr();
+      expect(";");
+    }
+
+    if (!consume(")")) {
+      right->lhs = expr();
+      expect(")");
+    }
+
     right->rhs = stmt();
 
     node->lhs = left;

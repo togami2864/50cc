@@ -8,6 +8,7 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+  if (!node) return;
   switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
@@ -60,7 +61,6 @@ void gen(Node *node) {
       printf("  jmp .LbeginXXX\n");
       printf(".LendXXX:\n");
       return;
-
     case ND_FOR:
       gen(node->lhs->lhs);
       printf(".LbeginXXX:\n");
