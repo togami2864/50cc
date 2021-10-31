@@ -8,6 +8,7 @@ void gen_lval(Node *node) {
 }
 
 int genId = 0;
+char name[100] = {0};
 
 void gen(Node *node) {
   if (!node) return;
@@ -85,6 +86,15 @@ void gen(Node *node) {
         gen(node->block[i]);
         printf("  pop rax\n");
       }
+      return;
+    case ND_FUNC:
+      memcpy(name, node->funcname, node->len);
+      for (int i = 0; node->block[i]; i++) {
+        gen(node->block[i]);
+      }
+      printf("  pop rsi\n");
+      printf("  pop rdi\n");
+      printf("  call %s\n", name);
       return;
   }
 
