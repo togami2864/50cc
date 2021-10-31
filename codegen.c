@@ -69,6 +69,9 @@ void gen(Node *node) {
       gen(node->lhs->lhs);
       printf(".Lbegin%d:\n", id);
       gen(node->lhs->rhs);
+      if (!node->lhs->rhs) {
+        printf("  push 1\n");
+      }
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
       printf("  je  .Lend%d\n", id);
@@ -76,6 +79,12 @@ void gen(Node *node) {
       gen(node->rhs->lhs);
       printf("  jmp .Lbegin%d\n", id);
       printf(".Lend%d:\n", id);
+      return;
+    case ND_BLOCK:
+      for (int i = 0; node->block[i]; i++) {
+        gen(node->block[i]);
+        printf("  pop rax\n");
+      }
       return;
   }
 

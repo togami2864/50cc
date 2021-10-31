@@ -99,7 +99,15 @@ void program() {
 
 Node *stmt() {
   Node *node;
-
+  if (consume("{")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+    node->block = calloc(10, sizeof(Node));
+    for (int i = 0; !consume("}"); i++) {
+      node->block[i] = stmt();
+    }
+    return node;
+  }
   if (consume_if()) {
     expect("(");
     node = calloc(1, sizeof(Node));
