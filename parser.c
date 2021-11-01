@@ -91,10 +91,28 @@ LVar *find_lvar(Token *tok) {
   return NULL;
 }
 
+// program = func*
 void program() {
   int i = 0;
-  while (!at_eof()) code[i++] = stmt();
+  while (!at_eof()) code[i++] = func();
   code[i] = NULL;
+}
+
+// func = ident "(" ")" stmt
+Node *func() {
+  Node *node;
+  Token *tok = consume_ident();
+  if (tok == NULL) {
+    error("invalid function");
+  }
+  node = calloc(1, sizeof(Node));
+  node->kind = ND_FUNC_DEF;
+  node->funcname = calloc(100, sizeof(char));
+  memcpy(node->funcname, tok->str, tok->len);
+  expect("(");
+  expect(")");
+  node->lhs = stmt();
+  return node;
 }
 
 Node *stmt() {
@@ -259,9 +277,9 @@ Node *primary() {
   if (tok) {
     if (consume("(")) {
       Node *node = calloc(1, sizeof(Node));
-      node->kind = ND_FUNC;
-      node->funcname = tok->str;
-      node->len = tok->len;
+      node->kind = ND_FUNC_CALL;
+      node->funcname = calloc(100, sizeof(char));
+      memcpy(node->funcname, tok->str, tok->len);
       node->block = calloc(10, sizeof(Node));
       for (int i = 0; !consume(")"); i++) {
         node->block[i] = expr();

@@ -68,7 +68,8 @@ typedef enum {
   ND_FOR_LEFT,
   ND_FOR_RIGHT,
   ND_BLOCK,
-  ND_FUNC
+  ND_FUNC_CALL,
+  ND_FUNC_DEF,
 } NodeKind;
 
 typedef struct Node Node;
@@ -87,6 +88,7 @@ struct Node {
 extern Node *code[];
 
 void program();
+Node *func();
 Node *stmt();
 Node *assign();
 Node *expr();

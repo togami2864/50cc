@@ -20,7 +20,7 @@ assert(){
     fi
 }
 
-# assert "0" "0;"
+assert 2 "main () { return 2;}"
 # assert 42 "42;"
 # assert 21 "5+20-4;"
 # assert 2 " 5 - 3; "
@@ -85,8 +85,8 @@ assert(){
 
 # assert 10 "foo();"
 
-assert 0 "fooo(4, 1);"
-assert 0 "foooo(1, 1, 1);"
+# assert 0 "fooo(4, 1);"
+# assert 0 "foooo(1, 1, 1);"
 
 
 echo OK

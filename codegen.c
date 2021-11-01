@@ -9,12 +9,12 @@ void gen_lval(Node *node) {
 
 int genId = 0;
 char *argRegs[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
-char name[100] = {0};
 
 void gen(Node *node) {
   if (!node) return;
   genId += 1;
   int id = genId;
+  int argCount = 0;
   switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
@@ -88,9 +88,7 @@ void gen(Node *node) {
         printf("  pop rax\n");
       }
       return;
-    case ND_FUNC:
-      memcpy(name, node->funcname, node->len);
-      int argCount = 0;
+    case ND_FUNC_CALL:
       for (int i = 0; node->block[i]; i++) {
         gen(node->block[i]);
         argCount++;
@@ -102,14 +100,25 @@ void gen(Node *node) {
       printf("  and rax, 15\n");
       printf("  jnz .L.call.%d\n", id);
       printf("  mov rax, 0\n");
-      printf("  call %s\n", name);
+      printf("  call %s\n", node->funcname);
       printf("  jmp .L.end.%d\n", id);
       printf(".L.call.%d:\n", id);
       printf("  sub rsp, 8\n");
       printf("mov rax, 0\n");
-      printf("  call %s\n", name);
+      printf("  call %s\n", node->funcname);
       printf("  add rsp, 8\n");
       printf(".L.end.%d:\n", id);
+      printf("  push rax\n");
+      return;
+    case ND_FUNC_DEF:
+      printf("%s:\n", node->funcname);
+      printf("  push rbp\n");
+      printf("  mov rbp, rsp\n");
+      printf("  sub rsp, 208\n");
+      gen(node->lhs);
+      printf("  mov rsp, rbp\n");
+      printf("  pop rbp\n");
+      printf("  ret\n");
       return;
   }
 
