@@ -86,6 +86,7 @@ assert(){
 # assert 10 "foo();"
 
 assert 0 "fooo(4, 1);"
+assert 0 "foooo(1, 1, 1);"
 
 
 echo OK

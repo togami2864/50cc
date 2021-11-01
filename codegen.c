@@ -8,6 +8,7 @@ void gen_lval(Node *node) {
 }
 
 int genId = 0;
+char *argRegs[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 char name[100] = {0};
 
 void gen(Node *node) {
@@ -89,11 +90,14 @@ void gen(Node *node) {
       return;
     case ND_FUNC:
       memcpy(name, node->funcname, node->len);
+      int argCount = 0;
       for (int i = 0; node->block[i]; i++) {
         gen(node->block[i]);
+        argCount++;
       }
-      printf("  pop rsi\n");
-      printf("  pop rdi\n");
+      for (int i = argCount - 1; i >= 0; i--) {
+        printf("  pop %s\n", argRegs[i]);
+      }
       printf("  call %s\n", name);
       return;
   }
