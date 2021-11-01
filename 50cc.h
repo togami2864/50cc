@@ -80,6 +80,7 @@ struct Node {
   Node *els;
   Node **block;
   char *funcname;
+  Node **args;
   int len;
   int val;
   int offset;
@@ -98,6 +99,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+Node *variable();
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
@@ -114,4 +116,5 @@ struct LVar {
   int offset;
 };
 
-extern LVar *locals;
+extern LVar *locals[];
+extern int cur_func;

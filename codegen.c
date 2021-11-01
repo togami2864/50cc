@@ -85,7 +85,6 @@ void gen(Node *node) {
     case ND_BLOCK:
       for (int i = 0; node->block[i]; i++) {
         gen(node->block[i]);
-        printf("  pop rax\n");
       }
       return;
     case ND_FUNC_CALL:
@@ -114,7 +113,17 @@ void gen(Node *node) {
       printf("%s:\n", node->funcname);
       printf("  push rbp\n");
       printf("  mov rbp, rsp\n");
-      printf("  sub rsp, 208\n");
+      for (int i = 0; node->args[i]; i++) {
+        printf("push %s\n", argRegs[i]);
+        argCount++;
+      }
+
+      if (locals[cur_func]) {
+        int offset = locals[cur_func][0].offset;
+        offset -= argCount * 8;
+        printf("  sub rsp, %d\n", offset);
+      }
+
       gen(node->lhs);
       printf("  mov rsp, rbp\n");
       printf("  pop rbp\n");

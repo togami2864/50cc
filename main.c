@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  locals = NULL;
   user_input = argv[1];
   token = tokenize();
   program();
@@ -38,7 +37,9 @@ int main(int argc, char **argv) {
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
 
+  cur_func = 0;
   for (int i = 0; code[i]; i++) {
+    cur_func++;
     gen(code[i]);
   }
 

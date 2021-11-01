@@ -1,7 +1,8 @@
 #include "50cc.h"
 
 Node *code[100];
-LVar *locals;
+LVar *locals[100];
+int cur_func = 0;
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
   Node *node = calloc(1, sizeof(Node));
@@ -83,7 +84,7 @@ int expect_number() {
 
 LVar *find_lvar(Token *tok) {
   int i = 0;
-  for (LVar *var = locals; var; var = var->next) {
+  for (LVar *var = locals[cur_func]; var; var = var->next) {
     i++;
     if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
       return var;
@@ -100,6 +101,7 @@ void program() {
 
 // func = ident "(" ")" stmt
 Node *func() {
+  cur_func++;
   Node *node;
   Token *tok = consume_ident();
   if (tok == NULL) {
@@ -108,9 +110,20 @@ Node *func() {
   node = calloc(1, sizeof(Node));
   node->kind = ND_FUNC_DEF;
   node->funcname = calloc(100, sizeof(char));
+  node->args = calloc(10, sizeof(Node *));
   memcpy(node->funcname, tok->str, tok->len);
   expect("(");
-  expect(")");
+  int i = 0;
+  for (int i = 0; !consume(")"); i++) {
+    Token *tok = consume_ident();
+    if (tok != NULL) {
+      node->args[i] = variable(tok);
+    }
+    if (consume(")")) {
+      break;
+    }
+    expect(",");
+  }
   node->lhs = stmt();
   return node;
 }
@@ -290,28 +303,31 @@ Node *primary() {
       }
       return node;
     }
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_LVAR;
-
-    LVar *lvar = find_lvar(tok);
-
-    if (lvar) {
-      node->offset = lvar->offset;
-    } else {
-      lvar = calloc(1, sizeof(LVar));
-      lvar->next = locals;
-      lvar->name = tok->str;
-      lvar->len = tok->len;
-      if (locals == NULL) {
-        lvar->offset = 8;
-      } else {
-        lvar->offset = locals->offset + 8;
-      }
-      node->offset = lvar->offset;
-      locals = lvar;
-    }
-    return node;
+    return variable(tok);
   }
 
   return new_node_num(expect_number());
+}
+
+Node *variable(Token *tok) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+
+  LVar *lvar = find_lvar(tok);
+  if (lvar) {
+    node->offset = lvar->offset;
+  } else {
+    lvar = calloc(1, sizeof(LVar));
+    lvar->next = locals[cur_func];
+    lvar->name = tok->str;
+    lvar->len = tok->len;
+    if (locals[cur_func] == NULL) {
+      lvar->offset = 8;
+    } else {
+      lvar->offset = locals[cur_func]->offset + 8;
+    }
+    node->offset = lvar->offset;
+    locals[cur_func] = lvar;
+  }
+  return node;
 }
