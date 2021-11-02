@@ -20,27 +20,32 @@ assert(){
     fi
 }
 
-assert 2 "main () { return 2;}"
-assert 3 "
-main() return func(1, 2);
-func(a, b) { return a + b; }
-"
+# assert 2 "main () { return 2;}"
+# assert 3 "
+# main() return func(1, 2);
+# func(a, b) { return a + b; }
+# "
 
-assert 4 "
-main() return func(1, 2, 3);
-func(a, b, c) { return a + c; }
-"
+# assert 4 "
+# main() return func(1, 2, 3);
+# func(a, b, c) { return a + c; }
+# "
 
-assert 3 "main() {
-  a = 4;
-  return fib(a);
-}
-fib(n){
-  if(n == 0) return 0;
-  if(n == 1) return 1;
-  return  fib(n - 1)+ fib(n -2);
-}
-"
+# assert 3 "main() {
+#   a = 4;
+#   return fib(a);
+# }
+# fib(n){
+#   if(n == 0) return 0;
+#   if(n == 1) return 1;
+#   return  fib(n - 1)+ fib(n -2);
+# }
+# "
+
+assert 4 "main(){x = 4;
+y = &x;
+return *y;
+}"
 # assert 42 "42;"
 # assert 21 "5+20-4;"
 # assert 2 " 5 - 3; "
