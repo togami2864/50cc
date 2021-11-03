@@ -28,52 +28,67 @@ assert 5 "main() {
 }"
 
 # basic test case
-assert 2 "main () { return 2;}"
+assert 2 "main(){return 2;}"
 assert 42 "main()return 42;"
 assert 21 "main(){return 5+20-4;}"
 assert 2 "main(){return 5 - 3;}"
 assert 47 "main(){return 5+6*7;}"
 assert 15 "main(){return 5*(9-6);}"
-assert 4 "main(){ return (3+5)/2;}"
-assert 10 "main(){ return -10+20;}"
+assert 4 "main(){return (3+5)/2;}"
+assert 10 "main(){return -10+20;}"
 
-# assert 0 "0==1;"
-# assert 1 "42==42;"
-# assert 1 "0!=1;"
-# assert 0 "42!=42;"
+assert 0 "main(){return 0==1;}"
+assert 1 "main(){return 42==42;}"
+assert 1 "main(){return 0!=1;}"
+assert 0 "main(){return 42!=42;}"
 
-# assert 1 "0<1;"
-# assert 0 "1<1;"
-# assert 0 "2<1;"
-# assert 1 "0<=1;"
-# assert 1 "1<=1;"
-# assert 0 "2<=1;"
+assert 1 "main(){return 0<1;}"
+assert 0 "main(){return 1<1;}"
+assert 0 "main(){return 2<1;}"
+assert 1 "main(){return 0<=1;}"
+assert 1 "main(){return 1<=1;}"
+assert 0 "main(){return 2<=1;}"
 
-# assert 1 "1>0;"
-# assert 0 "1>1;"
-# assert 0 "1>2;"
-# assert 1 "1>=0;"
-# assert 1 "1>=1;"
-# assert 0 "1>=2;"
+assert 1 "main(){return 1>0;}"
+assert 0 "main(){return 1>1;}"
+assert 0 "main(){return 1>2;}"
+assert 1 "main(){return 1>=0;}"
+assert 1 "main(){return 1>=1;}"
+assert 0 "main(){return 1>=2;}"
 
-# assert 14 "a = 3;
-# b = 5 * 6 - 8;
-# a + b / 2;"
+# with variables
+assert 14 "main(){
+int a;
+int b;
+a = 3;
+b = 5 * 6 - 8;
+return a + b / 2;}"
 
-# assert 6 "return 6;"
+assert 6 "main(){
+int foo;
+int bar;
+foo = 1;
+bar = 2 + 3;
+return foo + bar;}"
 
-# assert 6 "foo = 1;
-# bar = 2 + 3;
-# return foo + bar;"
+# if statement
+assert 6 "main(){if (1 != 1) return 1;
+else return 6;
+return 2;}
+"
 
-# assert 6 "if (1 != 1) return 1;
-# else return 6;
-# return 2;
-# "
+# with function
 # assert 3 "
 # main() return func(1, 2);
-# func(a, b) { return a + b; }
+# func(int a, int b) { return a + b; }
 # "
+
+# pointer
+
+# assert 4 "main(){x = 4;
+# y = &x;
+# return *y;
+# }"
 
 # assert 4 "
 # main() return func(1, 2, 3);
@@ -91,10 +106,7 @@ assert 10 "main(){ return -10+20;}"
 # }
 # "
 
-# assert 4 "main(){x = 4;
-# y = &x;
-# return *y;
-# }"
+
 
 # assert 10 "i = 0;
 # while (i < 10) i = i + 1;
