@@ -64,6 +64,12 @@ bool consume_for() {
   return true;
 }
 
+bool consume_type() {
+  if (token->kind != TK_TYPE) return false;
+  token = token->next;
+  return true;
+}
+
 void expect(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
@@ -201,10 +207,17 @@ Node *stmt() {
 
   if (consume_return()) {
     node = new_node(ND_RETURN, expr(), NULL);
-  } else {
-    node = expr();
+    expect(";");
+    return node;
   }
 
+  if (consume_type()) {
+    Token *tok = consume_ident();
+    node = define_variable(tok);
+    expect(";");
+    return node;
+  }
+  node = expr();
   expect(";");
   return node;
 }
@@ -311,25 +324,40 @@ Node *primary() {
   return new_node_num(expect_number());
 }
 
-Node *variable(Token *tok) {
+Node *define_variable(Token *tok) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_LVAR;
 
   LVar *lvar = find_lvar(tok);
-  if (lvar) {
-    node->offset = lvar->offset;
-  } else {
-    lvar = calloc(1, sizeof(LVar));
-    lvar->next = locals[cur_func];
-    lvar->name = tok->str;
-    lvar->len = tok->len;
-    if (locals[cur_func] == NULL) {
-      lvar->offset = 8;
-    } else {
-      lvar->offset = locals[cur_func]->offset + 8;
-    }
-    node->offset = lvar->offset;
-    locals[cur_func] = lvar;
+  if (lvar != NULL) {
+    char *name = calloc(1, tok->len + 1);
+    memcpy(name, tok->str, tok->len);
+    error("duplicated variable: %s\n", name);
   }
+  lvar = calloc(1, sizeof(LVar));
+  lvar->next = locals[cur_func];
+  lvar->name = tok->str;
+  lvar->len = tok->len;
+  if (locals[cur_func] == NULL) {
+    lvar->offset = 8;
+  } else {
+    lvar->offset = locals[cur_func]->offset + 8;
+  }
+  node->offset = lvar->offset;
+  locals[cur_func] = lvar;
+
+  return node;
+}
+
+Node *variable(Token *tok) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+  LVar *lvar = find_lvar(tok);
+  if (lvar == NULL) {
+    char *name = calloc(1, tok->len + 1);
+    memcpy(name, tok->str, tok->len);
+    error("undefined variable: %s\n", name);
+  }
+  node->offset = lvar->offset;
   return node;
 }

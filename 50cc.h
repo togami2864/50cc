@@ -15,6 +15,7 @@ typedef enum {
   TK_ELSE,
   TK_WHILE,
   TK_FOR,
+  TK_TYPE,
   TK_EOF
 } TokenKind;
 
@@ -40,6 +41,7 @@ bool consume_if();
 bool consume_else();
 bool consume_while();
 bool consume_for();
+bool consume_type();
 void expect(char *op);
 int expect_number();
 bool at_eof();
@@ -101,6 +103,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+Node * define_variable();
 Node *variable();
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
