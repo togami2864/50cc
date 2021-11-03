@@ -109,9 +109,12 @@ void program() {
 Node *func() {
   cur_func++;
   Node *node;
+  if (!consume_type()) {
+    error("type is not found");
+  }
   Token *tok = consume_ident();
   if (tok == NULL) {
-    error("invalid function");
+    error("there is no function");
   }
   node = calloc(1, sizeof(Node));
   node->kind = ND_FUNC_DEF;
@@ -121,9 +124,12 @@ Node *func() {
   expect("(");
   int i = 0;
   for (int i = 0; !consume(")"); i++) {
+    if (!consume_type()) {
+      error("type of args is not found");
+    }
     Token *tok = consume_ident();
     if (tok != NULL) {
-      node->args[i] = variable(tok);
+      node->args[i] = define_variable(tok);
     }
     if (consume(")")) {
       break;
