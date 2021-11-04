@@ -31,6 +31,14 @@ int main(){
 }
 "
 
+assert 4 "int main() {
+  int *p;
+  alloc(&p, 1, 2, 4, 8);
+  int *q;
+  q = p + 2;
+  return *q;
+}"
+
 
 # define variables with type "int"
 # assert 5 "int main() {

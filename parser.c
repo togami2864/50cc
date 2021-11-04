@@ -269,9 +269,19 @@ Node *add() {
   Node *node = mul();
   for (;;) {
     if (consume("+")) {
-      node = new_node(ND_ADD, node, mul());
+      Node *r = mul();
+      if (node->type && node->type->ty == PTR) {
+        int c = node->type->ptr_to->ty == INT ? 4 : 8;
+        r = new_node(ND_MUL, r, new_node_num(c));
+      }
+      node = new_node(ND_ADD, node, r);
     } else if (consume("-")) {
-      node = new_node(ND_SUB, node, mul());
+      Node *r = mul();
+      if (node->type && node->type->ty == PTR) {
+        int c = node->type->ptr_to->ty == INT ? 4 : 8;
+        r = new_node(ND_MUL, r, new_node_num(c));
+      }
+      node = new_node(ND_SUB, node, r);
     } else {
       return node;
     }
@@ -365,6 +375,7 @@ Node *define_variable() {
   }
   lvar->type = type;
   node->offset = lvar->offset;
+  node->type = type;
   locals[cur_func] = lvar;
 
   return node;
@@ -380,5 +391,6 @@ Node *variable(Token *tok) {
     error("undefined variable: %s\n", name);
   }
   node->offset = lvar->offset;
+  node->type = lvar->type;
   return node;
 }

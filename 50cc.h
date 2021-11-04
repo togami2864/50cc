@@ -50,6 +50,12 @@ bool startswith(char *p, char *q);
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 Token *tokenize();
 
+typedef struct Type Type;
+struct Type {
+  enum { INT, PTR } ty;
+  struct Type *ptr_to;
+};
+
 typedef enum {
   ND_ADD,
   ND_SUB,
@@ -88,12 +94,7 @@ struct Node {
   int len;
   int val;
   int offset;
-};
-
-typedef struct Type Type;
-struct Type {
-  enum { INT, PTR } ty;
-  struct Type *ptr_to;
+  Type *type;
 };
 
 extern Node *code[];
