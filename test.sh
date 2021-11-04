@@ -20,24 +20,36 @@ assert(){
     fi
 }
 
-# define variables with type "int"
-assert 5 "int main() {
+# pointer
+assert 3 "
+int main(){
   int x;
-  x = 5;
+  int *y;
+  y = &x;
+  *y = 3;
   return x;
-}"
-
-assert 3 "int main() {
-  int a;
-  a = 4;
-  return fib(a);
-}
-int fib(int n){
-  if(n == 0) return 0;
-  if(n == 1) return 1;
-  return  fib(n - 1)+ fib(n -2);
 }
 "
+
+
+# define variables with type "int"
+# assert 5 "int main() {
+#   int x;
+#   x = 5;
+#   return x;
+# }"
+
+# assert 3 "int main() {
+#   int a;
+#   a = 4;
+#   return fib(a);
+# }
+# int fib(int n){
+#   if(n == 0) return 0;
+#   if(n == 1) return 1;
+#   return  fib(n - 1)+ fib(n -2);
+# }
+# "
 
 # basic test case
 # assert 2 "main(){return 2;}"

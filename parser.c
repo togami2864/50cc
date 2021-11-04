@@ -113,6 +113,7 @@ Node *func() {
     error("type is not found");
   }
   Token *tok = consume_ident();
+
   if (tok == NULL) {
     error("there is no function");
   }
@@ -127,10 +128,9 @@ Node *func() {
     if (!consume_type()) {
       error("type of args is not found");
     }
-    Token *tok = consume_ident();
-    if (tok != NULL) {
-      node->args[i] = define_variable(tok);
-    }
+
+    node->args[i] = define_variable();
+
     if (consume(")")) {
       break;
     }
@@ -218,8 +218,7 @@ Node *stmt() {
   }
 
   if (consume_type()) {
-    Token *tok = consume_ident();
-    node = define_variable(tok);
+    node = define_variable();
     expect(";");
     return node;
   }
@@ -330,7 +329,22 @@ Node *primary() {
   return new_node_num(expect_number());
 }
 
-Node *define_variable(Token *tok) {
+Node *define_variable() {
+  Type *type;
+  type = calloc(1, sizeof(Type));
+  type->ty = INT;
+  type->ptr_to = NULL;
+  while (consume("*")) {
+    Type *ptr_type;
+    ptr_type = calloc(1, sizeof(Type));
+    ptr_type->ty = PTR;
+    ptr_type->ptr_to = type;
+    type = ptr_type;
+  }
+  Token *tok = consume_ident();
+  if (tok == NULL) {
+    error("invalid variable");
+  }
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_LVAR;
 
@@ -349,6 +363,7 @@ Node *define_variable(Token *tok) {
   } else {
     lvar->offset = locals[cur_func]->offset + 8;
   }
+  lvar->type = type;
   node->offset = lvar->offset;
   locals[cur_func] = lvar;
 

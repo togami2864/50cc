@@ -90,6 +90,12 @@ struct Node {
   int offset;
 };
 
+typedef struct Type Type;
+struct Type {
+  enum { INT, PTR } ty;
+  struct Type *ptr_to;
+};
+
 extern Node *code[];
 
 void program();
@@ -103,7 +109,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
-Node * define_variable();
+Node *define_variable();
 Node *variable();
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
@@ -119,6 +125,7 @@ struct LVar {
   char *name;
   int len;
   int offset;
+  Type *type;
 };
 
 extern LVar *locals[];
